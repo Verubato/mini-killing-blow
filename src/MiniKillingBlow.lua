@@ -1,4 +1,4 @@
-local soundFile = "Interface\\AddOns\\MiniKillingBlow\\kill.ogg"
+local soundFile = "Interface\\AddOns\\MiniKillingBlow\\Kill.ogg"
 local frame = CreateFrame("Frame")
 
 local function IsMidnight()
