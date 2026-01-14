@@ -3,7 +3,7 @@
 ## Notes: Plays a sound when getting a killing blow.
 ## Author: Verz
 ## Version: 1.0.0
-## IconTexture: Interface\AddOns\MiniKillingBlow\icon.blp
+## IconTexture: Interface\AddOns\MiniKillingBlow\Icon.blp
 ## X-Curse-Project-ID: 1418796
 
 MiniKillingBlow.lua
