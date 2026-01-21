@@ -16,6 +16,10 @@ if IsMidnight() then
 	frame:RegisterEvent("PARTY_KILL")
 
 	frame:SetScript("OnEvent", function(_, _, killerGUID, victimGUID)
+		if issecretvalue(killerGUID) or issecretvalue(victimGUID) then
+			return
+		end
+
 		if killerGUID ~= UnitGUID("player") then
 			return
 		end
