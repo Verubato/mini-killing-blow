@@ -28,7 +28,7 @@ if IsMidnight() then
 			return
 		end
 
-		PlaySoundFile(soundFile, "Master")
+		PlaySoundFile(soundFile, "SFX")
 	end)
 else
 	frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
