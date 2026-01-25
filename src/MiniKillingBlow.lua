@@ -16,7 +16,7 @@ if IsMidnight() then
 	frame:RegisterEvent("PARTY_KILL")
 
 	frame:SetScript("OnEvent", function(_, _, killerGUID, victimGUID)
-		if issecretvalue(killerGUID) or issecretvalue(victimGUID) then
+		if issecretvalue(killerGUID) then
 			return
 		end
 
@@ -24,11 +24,10 @@ if IsMidnight() then
 			return
 		end
 
-		if not IsPlayerGUID(victimGUID) then
-			return
+		-- if it's secret, assume it's a player
+		if issecretvalue(victimGUID) or IsPlayerGUID(victimGUID) then
+			PlaySoundFile(soundFile, "SFX")
 		end
-
-		PlaySoundFile(soundFile, "SFX")
 	end)
 else
 	frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
