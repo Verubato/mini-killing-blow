@@ -61,7 +61,7 @@ else
 			return
 		end
 
-		if TargetIsPlayer(victimGUID) then
+		if not TargetIsPlayer(victimGUID) then
 			return
 		end
 
