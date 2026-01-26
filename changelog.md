@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2
+
+Fixed sound triggering on NPCs in classic.
+
 ## 1.2.1
 
 Switched to the SFX/Effects channel for non-midnight clients.
