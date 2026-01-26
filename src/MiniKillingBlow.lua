@@ -12,22 +12,40 @@ local function IsPlayerGUID(guid)
 	return type(guid) == "string" and guid:match("^Player%-")
 end
 
+local function IsSecret(value)
+	if not issecretvalue then
+		return false
+	end
+
+	return issecretvalue(value)
+end
+
+local function KillerIsSelf(killerGUID)
+	if IsSecret(killerGUID) then
+		return false
+	end
+
+	return killerGUID == UnitGUID("player")
+end
+
+local function TargetIsPlayer(victimGUID)
+	-- if it's secret, assume it's a player
+	return IsSecret(victimGUID) or IsPlayerGUID(victimGUID)
+end
+
 if IsMidnight() then
 	frame:RegisterEvent("PARTY_KILL")
 
 	frame:SetScript("OnEvent", function(_, _, killerGUID, victimGUID)
-		if issecretvalue(killerGUID) then
+		if not KillerIsSelf(killerGUID) then
 			return
 		end
 
-		if killerGUID ~= UnitGUID("player") then
+		if not TargetIsPlayer(victimGUID) then
 			return
 		end
 
-		-- if it's secret, assume it's a player
-		if issecretvalue(victimGUID) or IsPlayerGUID(victimGUID) then
-			PlaySoundFile(soundFile, "SFX")
-		end
+		PlaySoundFile(soundFile, "SFX")
 	end)
 else
 	frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -39,14 +57,14 @@ else
 			return
 		end
 
-		if killerGUID ~= UnitGUID("player") then
+		if not KillerIsSelf(killerGUID) then
 			return
 		end
 
-		if not IsPlayerGUID(victimGUID) then
+		if TargetIsPlayer(victimGUID) then
 			return
 		end
 
-		PlaySoundFile(soundFile, "Master")
+		PlaySoundFile(soundFile, "SFX")
 	end)
 end
