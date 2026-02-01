@@ -1,11 +1,12 @@
 local soundFile = "Interface\\AddOns\\MiniKillingBlow\\Kill.ogg"
 local frame = CreateFrame("Frame")
 
-local function IsMidnight()
+local function HasPartyKillEvent()
 	if LE_EXPANSION_LEVEL_CURRENT == nil or LE_EXPANSION_MIDNIGHT == nil then
 		return false
 	end
-	return LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_MIDNIGHT
+
+	return LE_EXPANSION_LEVEL_CURRENT >= LE_EXPANSION_MIDNIGHT
 end
 
 local function IsPlayerGUID(guid)
@@ -45,7 +46,7 @@ local function PartyKill(killerGUID, victimGUID)
 	PlaySoundFile(soundFile, "SFX")
 end
 
-if IsMidnight() then
+if HasPartyKillEvent() then
 	frame:RegisterEvent("PARTY_KILL")
 
 	frame:SetScript("OnEvent", function(_, _, killerGUID, victimGUID)
