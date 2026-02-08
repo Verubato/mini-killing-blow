@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.0
+
+- Added more sound effects.
+- Added killing streak functionality.
+
 ## 1.2.3
 
 Minor internal refactor to simplify some code.
