@@ -4,6 +4,9 @@
 ## Author: Verz
 ## Version: 1.2.3
 ## IconTexture: Interface\AddOns\MiniKillingBlow\Icon.blp
+## SavedVariables: MiniKillingBlowDB
 ## X-Curse-Project-ID: 1418796
 
+MiniFramework.lua
+Config.lua
 MiniKillingBlow.lua

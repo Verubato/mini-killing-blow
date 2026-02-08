@@ -1,5 +1,83 @@
-local soundFile = "Interface\\AddOns\\MiniKillingBlow\\Kill.ogg"
-local frame = CreateFrame("Frame")
+---@type string, Addon
+local addonName, addon = ...
+local soundsFolder = "Interface\\AddOns\\" .. addonName .. "\\Sounds\\"
+local customSoundsFolder = "Interface\\AddOns\\MiniKillingBlowCustomSounds\\"
+local mini = addon.Framework
+local config = addon.Config
+---@type Db
+local db
+local eventsFrame
+local multiKillWindow = 10
+
+---@type number
+local killingBlowsInWindow = 0
+local lastKillingBlowTime = nil
+local resetTimer = nil
+
+---Returns a number between 1 and N
+local function OneToN(x, n)
+	return ((x - 1) % n) + 1
+end
+
+local function StopResetTimer()
+	if resetTimer and resetTimer.Cancel then
+		resetTimer:Cancel()
+	end
+	resetTimer = nil
+end
+
+local function StartResetTimer()
+	StopResetTimer()
+
+	-- After 10 seconds of no kills, reset the streak.
+	-- C_Timer is available in modern clients; if not, the time delta logic still works.
+	if C_Timer and C_Timer.NewTimer then
+		resetTimer = C_Timer.NewTimer(multiKillWindow, function()
+			killingBlowsInWindow = 0
+			lastKillingBlowTime = nil
+			resetTimer = nil
+		end)
+	end
+end
+
+---@return number
+local function IncrementKillingBlowsWindow()
+	local now = GetTime()
+
+	if not lastKillingBlowTime or (now - lastKillingBlowTime) > multiKillWindow then
+		-- New streak
+		killingBlowsInWindow = 1
+	else
+		-- Continue streak
+		killingBlowsInWindow = killingBlowsInWindow + 1
+	end
+
+	lastKillingBlowTime = now
+	StartResetTimer()
+
+	return killingBlowsInWindow
+end
+
+local function GetSoundEffect(killingBlows)
+	if db.SoundEffectPack == config.SoundPacks.Guns then
+		local oneToFour = OneToN(killingBlows, 4)
+		return soundsFolder .. "Guns\\" .. oneToFour .. ".ogg"
+	end
+
+	if db.SoundEffectPack == config.SoundPacks.UnrealTournament then
+		return soundsFolder .. "UnrealTournament\\" .. math.min(killingBlows, 7) .. ".ogg"
+	end
+
+	if db.SoundEffectPack == config.SoundPacks.Halo then
+		return soundsFolder .. "Halo\\" .. math.min(killingBlows, 8) .. ".ogg"
+	end
+
+	if db.SoundEffectPack == config.SoundPacks.Custom then
+		return customSoundsFolder .. math.min(killingBlows, db.CustomSoundEffectCount or 5) .. ".ogg"
+	end
+
+	return nil
+end
 
 local function HasPartyKillEvent()
 	if LE_EXPANSION_LEVEL_CURRENT == nil or LE_EXPANSION_MIDNIGHT == nil then
@@ -34,6 +112,18 @@ local function TargetIsPlayer(victimGUID)
 	return IsSecret(victimGUID) or IsPlayerGUID(victimGUID)
 end
 
+local function KillingBlow()
+	-- Update multi-kill counter
+	local killingBlows = IncrementKillingBlowsWindow()
+
+	local soundFile = GetSoundEffect(killingBlows)
+	if not soundFile then
+		return
+	end
+
+	PlaySoundFile(soundFile, "SFX")
+end
+
 local function PartyKill(killerGUID, victimGUID)
 	if not KillerIsSelf(killerGUID) then
 		return
@@ -43,25 +133,47 @@ local function PartyKill(killerGUID, victimGUID)
 		return
 	end
 
-	PlaySoundFile(soundFile, "SFX")
+	KillingBlow()
 end
 
-if HasPartyKillEvent() then
-	frame:RegisterEvent("PARTY_KILL")
+function OnAddonLoaded()
+	config:Init()
 
-	frame:SetScript("OnEvent", function(_, _, killerGUID, victimGUID)
-		PartyKill(killerGUID, victimGUID)
-	end)
-else
-	frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	db = mini:GetSavedVars()
 
-	frame:SetScript("OnEvent", function()
-		local _, subEvent, _, killerGUID, _, _, _, victimGUID = CombatLogGetCurrentEventInfo()
+	eventsFrame = CreateFrame("Frame")
 
-		if subEvent ~= "PARTY_KILL" then
-			return
-		end
+	if HasPartyKillEvent() then
+		eventsFrame:RegisterEvent("PARTY_KILL")
+		eventsFrame:SetScript("OnEvent", function(_, _, killerGUID, victimGUID)
+			PartyKill(killerGUID, victimGUID)
+		end)
+	else
+		eventsFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		eventsFrame:SetScript("OnEvent", function()
+			local _, subEvent, _, killerGUID, _, _, _, victimGUID = CombatLogGetCurrentEventInfo()
 
-		PartyKill(killerGUID, victimGUID)
-	end)
+			if subEvent ~= "PARTY_KILL" then
+				return
+			end
+
+			PartyKill(killerGUID, victimGUID)
+		end)
+	end
 end
+
+function addon:TestKb()
+	KillingBlow()
+end
+
+function addon:ResetWindow()
+	killingBlowsInWindow = 0
+end
+
+mini:WaitForAddonLoad(OnAddonLoaded)
+
+---@class Addon
+---@field Config Config
+---@field Framework MiniFramework
+---@field TestKb fun(self: Addon)
+---@field ResetWindow fun(self: Addon)
