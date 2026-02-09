@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.0
+
+- Fixed order of Halo sound effects.
+- Added workaround for Midnight in arenas and BGs.
+
 ## 2.0.0
 
 - Added more sound effects.
