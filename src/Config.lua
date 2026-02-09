@@ -11,6 +11,7 @@ local M = {
 		UnrealTournament = "Unreal Tournament",
 		Halo = "Halo",
 		Guns = "Guns",
+		OneGun = "OneGun",
 		Custom = "Custom",
 	},
 }
@@ -85,6 +86,7 @@ function M:Init()
 		Items = {
 			"Unreal Tournament",
 			"Halo",
+			"One Gun",
 			"Guns",
 			"Custom",
 		},
