@@ -9,7 +9,7 @@ local db
 local eventsFrame
 local multiKillWindow = 10
 
----@type number
+local totalKills = 0
 local killingBlowsInWindow = 0
 local lastKillingBlowTime = nil
 local resetTimer = nil
@@ -40,6 +40,14 @@ local function StartResetTimer()
 	end
 end
 
+local function CurrentTotalKills()
+	-- All credit goes to drmlol for finding this workaround
+	-- Achievement -> Statistics -> Total Killing Blows
+	local _, _, _, _, _, _, _, _, killCount = GetAchievementCriteriaInfoByID(1487, 0)
+
+	return killCount
+end
+
 ---@return number
 local function IncrementKillingBlowsWindow()
 	local now = GetTime()
@@ -62,6 +70,10 @@ local function GetSoundEffect(killingBlows)
 	if db.SoundEffectPack == config.SoundPacks.Guns then
 		local oneToFour = OneToN(killingBlows, 4)
 		return soundsFolder .. "Guns\\" .. oneToFour .. ".ogg"
+	end
+
+	if db.SoundEffectPack == config.SoundPacks.OneGun then
+		return soundsFolder .. "OneGun\\1.ogg"
 	end
 
 	if db.SoundEffectPack == config.SoundPacks.UnrealTournament then
@@ -112,6 +124,13 @@ local function TargetIsPlayer(victimGUID)
 	return IsSecret(victimGUID) or IsPlayerGUID(victimGUID)
 end
 
+local function AchievementKillIncreased()
+	local current = CurrentTotalKills()
+	local previous = totalKills
+
+	return current > previous
+end
+
 local function KillingBlow()
 	-- Update multi-kill counter
 	local killingBlows = IncrementKillingBlowsWindow()
@@ -125,15 +144,24 @@ local function KillingBlow()
 end
 
 local function PartyKill(killerGUID, victimGUID)
-	if not KillerIsSelf(killerGUID) then
-		return
-	end
+	if IsSecret(killerGUID) or IsSecret(victimGUID) then
+		if not AchievementKillIncreased() then
+			return
+		end
+	else
+		if not KillerIsSelf(killerGUID) then
+			return
+		end
 
-	if not TargetIsPlayer(victimGUID) then
-		return
+		if not TargetIsPlayer(victimGUID) then
+			return
+		end
 	end
 
 	KillingBlow()
+
+	-- update the current total kills
+	totalKills = CurrentTotalKills()
 end
 
 function OnAddonLoaded()
@@ -160,6 +188,8 @@ function OnAddonLoaded()
 			PartyKill(killerGUID, victimGUID)
 		end)
 	end
+
+	totalKills = CurrentTotalKills()
 end
 
 function addon:TestKb()
