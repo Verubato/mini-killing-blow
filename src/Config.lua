@@ -11,7 +11,7 @@ local M = {
 		UnrealTournament = "Unreal Tournament",
 		Halo = "Halo",
 		Guns = "Guns",
-		OneGun = "OneGun",
+		OneGun = "One Gun",
 		Custom = "Custom",
 	},
 }

@@ -81,7 +81,7 @@ local function GetSoundEffect(killingBlows)
 	end
 
 	if db.SoundEffectPack == config.SoundPacks.Halo then
-		return soundsFolder .. "Halo\\" .. math.min(killingBlows, 8) .. ".ogg"
+		return soundsFolder .. "Halo\\" .. math.min(killingBlows, 10) .. ".ogg"
 	end
 
 	if db.SoundEffectPack == config.SoundPacks.Custom then
