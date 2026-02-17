@@ -120,8 +120,13 @@ local function KillerIsSelf(killerGUID)
 end
 
 local function TargetIsPlayer(victimGUID)
-	-- if it's secret, assume it's a player
-	return IsSecret(victimGUID) or IsPlayerGUID(victimGUID)
+	return not IsSecret(victimGUID) and IsPlayerGUID(victimGUID)
+end
+
+local function IsInstancePvP()
+	local inInstance, instanceType = IsInInstance()
+
+	return inInstance and (instanceType == "arena" or instanceType == "pvp")
 end
 
 local function AchievementKillIncreased()
@@ -145,6 +150,11 @@ end
 
 local function PartyKill(killerGUID, victimGUID)
 	if IsSecret(killerGUID) or IsSecret(victimGUID) then
+		if not IsInstancePvP() then
+			totalKills = CurrentTotalKills()
+			return
+		end
+
 		if not AchievementKillIncreased() then
 			return
 		end
