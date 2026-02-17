@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.0
+
+- Added option to choose the sound channel.
+- Potential fix for NPCs triggering the sound effect.
+
 ## 2.1.0
 
 - Fixed order of Halo sound effects.
