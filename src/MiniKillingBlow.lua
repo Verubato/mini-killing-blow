@@ -145,7 +145,7 @@ local function KillingBlow()
 		return
 	end
 
-	PlaySoundFile(soundFile, "SFX")
+	PlaySoundFile(soundFile, db.SoundChannel or "Master")
 end
 
 local function PartyKill(killerGUID, victimGUID)

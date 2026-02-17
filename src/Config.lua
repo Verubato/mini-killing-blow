@@ -19,6 +19,7 @@ local M = {
 ---@class Db
 local dbDefaults = {
 	SoundEffectPack = M.SoundPacks.UnrealTournament,
+	SoundChannel = "SFX",
 	CustomSoundEffectCount = 5,
 }
 
@@ -100,9 +101,33 @@ function M:Init()
 		end,
 	})
 
+	local channelLbl = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	channelLbl:SetText("Sound Channel")
+
+	local channelDdl = mini:Dropdown({
+		Parent = panel,
+		Items = {
+			"Master",
+			"Music",
+			"SFX",
+			"Ambience",
+			"Dialog",
+		},
+		GetValue = function()
+			return db.SoundChannel
+		end,
+		SetValue = function(value)
+			db.SoundChannel = value
+		end,
+	})
+
 	packLbl:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -verticalSpacing)
+
 	soundPackDdl:SetPoint("TOPLEFT", packLbl, "BOTTOMLEFT", modernDdl and 0 or -16, -8)
 	soundPackDdl:SetWidth(columnWidth - horizontalSpacing)
+
+	channelLbl:SetPoint("TOPLEFT", soundPackDdl, "BOTTOMLEFT", 0, -verticalSpacing)
+	channelDdl:SetPoint("TOPLEFT", channelLbl, "BOTTOMLEFT", 0, -verticalSpacing)
 
 	customCount.Label:SetPoint("TOP", packLbl, "TOP", 0, 0)
 	customCount.Label:SetPoint("LEFT", panel, "LEFT", columnWidth, 0)
@@ -114,7 +139,7 @@ function M:Init()
 
 	local testBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
 	testBtn:SetSize(120, 26)
-	testBtn:SetPoint("TOPLEFT", soundPackDdl, "BOTTOMLEFT", 0, -verticalSpacing)
+	testBtn:SetPoint("TOPLEFT", channelDdl, "BOTTOMLEFT", 0, -verticalSpacing)
 	testBtn:SetText("Test")
 	testBtn:SetScript("OnClick", function()
 		addon:TestKb()
