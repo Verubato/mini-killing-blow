@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.1
+
+12.0.5 TOC support.
+
 ## 2.2.0
 
 - Added option to choose the sound channel.
