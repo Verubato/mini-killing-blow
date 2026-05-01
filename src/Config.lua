@@ -21,6 +21,11 @@ local dbDefaults = {
 	SoundEffectPack = M.SoundPacks.UnrealTournament,
 	SoundChannel = "SFX",
 	CustomSoundEffectCount = 5,
+	KillTextX = 0,
+	KillTextY = 100,
+	ShowKillText = false,
+	KillText = "KILLING BLOW!",
+	KillTextLocked = true,
 }
 
 addon.Config = M
@@ -145,6 +150,47 @@ function M:Init()
 		addon:TestKb()
 	end)
 
+	local lockedChk = mini:Checkbox({
+		Parent = panel,
+		LabelText = "Locked",
+		Tooltip = "When unchecked, the killing blow text stays visible and can be dragged to reposition it.",
+		GetValue = function()
+			return db.KillTextLocked
+		end,
+		SetValue = function(value)
+			db.KillTextLocked = value
+			addon:UpdateKillTextLocked()
+		end,
+	})
+	lockedChk:SetPoint("TOPLEFT", testBtn, "BOTTOMLEFT", 0, -verticalSpacing)
+
+	local showTextChk = mini:Checkbox({
+		Parent = panel,
+		LabelText = "Show killing blow text",
+		GetValue = function()
+			return db.ShowKillText
+		end,
+		SetValue = function(value)
+			db.ShowKillText = value
+		end,
+	})
+	showTextChk:SetPoint("TOPLEFT", lockedChk, "TOPLEFT", 110, 0)
+
+	local killTextBox = mini:EditBox({
+		Parent = panel,
+		LabelText = "Killing blow text",
+		Width = columnWidth - horizontalSpacing,
+		GetValue = function()
+			return db.KillText
+		end,
+		SetValue = function(value)
+			db.KillText = (value ~= "" and value) or dbDefaults.KillText
+			addon:UpdateKillText()
+		end,
+	})
+	killTextBox.Label:SetPoint("TOPLEFT", lockedChk, "BOTTOMLEFT", 0, -verticalSpacing)
+	killTextBox.EditBox:SetPoint("TOPLEFT", killTextBox.Label, "BOTTOMLEFT", 4, -4)
+
 	local intro = mini:TextBlock({
 		Parent = panel,
 		Lines = {
@@ -158,5 +204,5 @@ function M:Init()
 			"  - Then click the test button to see if it works.",
 		},
 	})
-	intro:SetPoint("TOPLEFT", testBtn, "BOTTOMLEFT", 0, -verticalSpacing)
+	intro:SetPoint("TOPLEFT", killTextBox.EditBox, "BOTTOMLEFT", 0, -verticalSpacing)
 end

@@ -13,6 +13,108 @@ local totalKills = 0
 local killingBlowsInWindow = 0
 local lastKillingBlowTime = nil
 local resetTimer = nil
+local killBlowFrame = nil
+
+local function EnsureKillingBlowDisplay()
+	if killBlowFrame then
+		return killBlowFrame
+	end
+
+	local frame = CreateFrame("Frame", nil, UIParent)
+	frame:SetSize(440, 72)
+	frame:SetPoint("CENTER", UIParent, "CENTER", db.KillTextX or 0, db.KillTextY or 100)
+	frame:SetFrameStrata("HIGH")
+	frame:SetClampedToScreen(true)
+	frame:SetMovable(true)
+	frame:EnableMouse(true)
+	frame:RegisterForDrag("LeftButton")
+	frame:Hide()
+
+	frame:SetScript("OnDragStart", function(f)
+		if db.KillTextLocked then return end
+		f:StartMoving()
+	end)
+	frame:SetScript("OnDragStop", function(f)
+		if db.KillTextLocked then return end
+		f:StopMovingOrSizing()
+		local cx, cy = f:GetCenter()
+		local ux, uy = UIParent:GetCenter()
+		db.KillTextX = cx - ux
+		db.KillTextY = cy - uy
+		f:ClearAllPoints()
+		f:SetPoint("CENTER", UIParent, "CENTER", db.KillTextX, db.KillTextY)
+	end)
+
+	local label = db.KillText or "KILLING BLOW!"
+
+	-- Dark red shadow (slight offset for depth)
+	local shadow = frame:CreateFontString(nil, "BACKGROUND")
+	shadow:SetFont("Fonts\\FRIZQT__.TTF", 38, "THICKOUTLINE")
+	shadow:SetPoint("CENTER", frame, "CENTER", 2, -2)
+	shadow:SetJustifyH("CENTER")
+	shadow:SetText(label)
+	shadow:SetTextColor(0.25, 0, 0, 1)
+
+	-- Main bright red text
+	local text = frame:CreateFontString(nil, "ARTWORK")
+	text:SetFont("Fonts\\FRIZQT__.TTF", 38, "THICKOUTLINE")
+	text:SetPoint("CENTER", frame, "CENTER")
+	text:SetJustifyH("CENTER")
+	text:SetText(label)
+	text:SetTextColor(1, 0.05, 0.05, 1)
+
+	frame.Text = text
+	frame.Shadow = shadow
+
+	-- Animation: fade-in, hold, fade-out (only played when locked)
+	local ag = frame:CreateAnimationGroup()
+
+	local fadeIn = ag:CreateAnimation("Alpha")
+	fadeIn:SetFromAlpha(0)
+	fadeIn:SetToAlpha(1)
+	fadeIn:SetDuration(0.12)
+	fadeIn:SetOrder(1)
+
+	local hold = ag:CreateAnimation("Alpha")
+	hold:SetFromAlpha(1)
+	hold:SetToAlpha(1)
+	hold:SetDuration(1.8)
+	hold:SetOrder(2)
+
+	local fadeOut = ag:CreateAnimation("Alpha")
+	fadeOut:SetFromAlpha(1)
+	fadeOut:SetToAlpha(0)
+	fadeOut:SetDuration(0.6)
+	fadeOut:SetOrder(3)
+
+	ag:SetScript("OnFinished", function()
+		frame:Hide()
+	end)
+
+	frame.AnimGroup = ag
+	killBlowFrame = frame
+	return frame
+end
+
+local function ShowKillingBlowText()
+	if not db.ShowKillText then
+		return
+	end
+
+	local frame = EnsureKillingBlowDisplay()
+
+	if not db.KillTextLocked then
+		-- Unlocked: frame stays permanently visible for repositioning
+		frame:SetAlpha(1)
+		frame:Show()
+		return
+	end
+
+	frame.AnimGroup:Stop()
+	frame:SetAlpha(0)
+	frame:Show()
+	frame.AnimGroup:Play()
+end
 
 ---Returns a number between 1 and N
 local function OneToN(x, n)
@@ -137,15 +239,14 @@ local function AchievementKillIncreased()
 end
 
 local function KillingBlow()
-	-- Update multi-kill counter
 	local killingBlows = IncrementKillingBlowsWindow()
 
-	local soundFile = GetSoundEffect(killingBlows)
-	if not soundFile then
-		return
-	end
+	ShowKillingBlowText()
 
-	PlaySoundFile(soundFile, db.SoundChannel or "Master")
+	local soundFile = GetSoundEffect(killingBlows)
+	if soundFile then
+		PlaySoundFile(soundFile, db.SoundChannel or "Master")
+	end
 end
 
 local function PartyKill(killerGUID, victimGUID)
@@ -210,6 +311,31 @@ function addon:ResetWindow()
 	killingBlowsInWindow = 0
 end
 
+function addon:UpdateKillText()
+	if not killBlowFrame then
+		return
+	end
+	local label = db.KillText or "KILLING BLOW!"
+	killBlowFrame.Text:SetText(label)
+	killBlowFrame.Shadow:SetText(label)
+end
+
+function addon:UpdateKillTextLocked()
+	if db.KillTextLocked then
+		if killBlowFrame then
+			killBlowFrame.AnimGroup:Stop()
+			killBlowFrame:Hide()
+		end
+	else
+		if db.ShowKillText then
+			local frame = EnsureKillingBlowDisplay()
+			frame.AnimGroup:Stop()
+			frame:SetAlpha(1)
+			frame:Show()
+		end
+	end
+end
+
 mini:WaitForAddonLoad(OnAddonLoaded)
 
 ---@class Addon
@@ -217,3 +343,5 @@ mini:WaitForAddonLoad(OnAddonLoaded)
 ---@field Framework MiniFramework
 ---@field TestKb fun(self: Addon)
 ---@field ResetWindow fun(self: Addon)
+---@field UpdateKillText fun(self: Addon)
+---@field UpdateKillTextLocked fun(self: Addon)
