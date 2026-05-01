@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.0
+
+Added killing blow text.
+
 ## 2.2.1
 
 12.0.5 TOC support.
