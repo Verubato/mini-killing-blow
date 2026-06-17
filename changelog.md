@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.1
+
+12.0.7 TOC bump.
+
 ## 2.3.0
 
 Added killing blow text.
