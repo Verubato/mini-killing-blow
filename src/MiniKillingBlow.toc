@@ -1,8 +1,8 @@
-## Interface: 120007, 50503, 40402, 38000, 30405, 30300, 20505, 11508
+## Interface: 120100, 120007, 50503, 40402, 38000, 30405, 30300, 20505, 11508
 ## Title: MiniKillingBlow
 ## Notes: Plays a sound when getting a killing blow.
 ## Author: Verz
-## Version: 2.3.1
+## Version: 2.3.2
 ## IconTexture: Interface\AddOns\MiniKillingBlow\Icon.blp
 ## SavedVariables: MiniKillingBlowDB
 ## X-Curse-Project-ID: 1418796
