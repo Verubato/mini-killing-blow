@@ -46,14 +46,12 @@ function M:Init()
 	local columnWidth = mini:ColumnWidth(columns, 0, 0)
 	local verticalSpacing = mini.VerticalSpacing
 	local horizontalSpacing = mini.HorizontalSpacing
-	local version = C_AddOns.GetAddOnMetadata(addonName, "Version")
-	local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-	title:SetPoint("TOPLEFT", 0, -verticalSpacing)
-	title:SetText(string.format("%s - %s", addonName, version))
-
-	local subtitle = panel:CreateFontString(nil, "ARTWORK", "GameFontWhite")
-	subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -6)
-	subtitle:SetText("Increase your PvP immersion.")
+	local header = mini:PanelHeader({
+		Parent = panel,
+		Description = "Increase your PvP immersion.",
+		Y = -verticalSpacing,
+		Gap = 6,
+	})
 
 	mini:RegisterSlashCommand(category, panel, {
 		"/minikillingblow",
@@ -126,7 +124,7 @@ function M:Init()
 		end,
 	})
 
-	packLbl:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -verticalSpacing)
+	packLbl:SetPoint("TOPLEFT", header.Anchor, "BOTTOMLEFT", 0, -verticalSpacing)
 
 	soundPackDdl:SetPoint("TOPLEFT", packLbl, "BOTTOMLEFT", modernDdl and 0 or -16, -8)
 	soundPackDdl:SetWidth(columnWidth - horizontalSpacing)

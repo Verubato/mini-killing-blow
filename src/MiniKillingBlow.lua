@@ -193,28 +193,18 @@ local function GetSoundEffect(killingBlows)
 	return nil
 end
 
+-- The clients that fire PARTY_KILL are exactly the ones that hide combat log GUIDs behind
+-- secret values, so the two questions have the same answer.
 local function HasPartyKillEvent()
-	if LE_EXPANSION_LEVEL_CURRENT == nil or LE_EXPANSION_MIDNIGHT == nil then
-		return false
-	end
-
-	return LE_EXPANSION_LEVEL_CURRENT >= LE_EXPANSION_MIDNIGHT
+	return mini:HasSecrets()
 end
 
 local function IsPlayerGUID(guid)
 	return type(guid) == "string" and guid:match("^Player%-") or false
 end
 
-local function IsSecret(value)
-	if not issecretvalue then
-		return false
-	end
-
-	return issecretvalue(value)
-end
-
 local function KillerIsSelf(killerGUID)
-	if IsSecret(killerGUID) then
+	if mini:IsSecret(killerGUID) then
 		return false
 	end
 
@@ -222,7 +212,7 @@ local function KillerIsSelf(killerGUID)
 end
 
 local function TargetIsPlayer(victimGUID)
-	return not IsSecret(victimGUID) and IsPlayerGUID(victimGUID)
+	return not mini:IsSecret(victimGUID) and IsPlayerGUID(victimGUID)
 end
 
 local function IsInstancePvP()
@@ -250,7 +240,7 @@ local function KillingBlow()
 end
 
 local function PartyKill(killerGUID, victimGUID)
-	if IsSecret(killerGUID) or IsSecret(victimGUID) then
+	if mini:IsSecret(killerGUID) or mini:IsSecret(victimGUID) then
 		if not IsInstancePvP() then
 			totalKills = CurrentTotalKills()
 			return

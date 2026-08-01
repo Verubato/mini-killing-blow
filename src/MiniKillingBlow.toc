@@ -7,6 +7,6 @@
 ## SavedVariables: MiniKillingBlowDB
 ## X-Curse-Project-ID: 1418796
 
-MiniFramework.lua
+Libs\MiniFramework\MiniFramework.xml
 Config.lua
 MiniKillingBlow.lua
