@@ -49,7 +49,6 @@ function M:Init()
 	local header = mini:PanelHeader({
 		Parent = panel,
 		Description = "Increase your PvP immersion.",
-		Y = -verticalSpacing,
 		Gap = 6,
 	})
 
