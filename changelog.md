@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.2
+
+Updated interface versions for the latest client builds.
+
 ## 2.4.1
 
 Updated interface versions for the latest Classic, TBC and Mists builds.
