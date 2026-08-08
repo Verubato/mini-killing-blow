@@ -23,7 +23,7 @@ Halo 3 & Halo 4 © Microsoft Corporation. MiniKillingBlow was created under Micr
 
 ## Screenshots
 
-![MiniKillingBlow screenshot](https://media.forgecdn.net/attachments/1522/13/screenshot-settings-png.png)
+![MiniKillingBlow screenshot](https://raw.githubusercontent.com/Verubato/mini-killing-blow/main/assets/ScreenshotSettings.png)
 
 ## Download
 
