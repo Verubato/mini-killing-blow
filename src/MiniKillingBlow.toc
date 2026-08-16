@@ -3,7 +3,7 @@
 ## Notes: Plays a sound when getting a killing blow.
 ## Category: Mini
 ## Author: Verz
-## Version: 2.4.4
+## Version: 2.4.5
 ## IconTexture: Interface\AddOns\MiniKillingBlow\Icon.blp
 ## SavedVariables: MiniKillingBlowDB
 ## X-Curse-Project-ID: 1418796
