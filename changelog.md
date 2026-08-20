@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.6
+
+Stopped an internal helper leaking into the global namespace, where another addon could collide with it.
+
 ## 2.4.5
 
 Added a Mini category so the addon groups with the other Mini addons in the addon list.
