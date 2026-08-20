@@ -265,7 +265,7 @@ local function PartyKill(killerGUID, victimGUID)
 	totalKills = CurrentTotalKills()
 end
 
-function OnAddonLoaded()
+local function OnAddonLoaded()
 	config:Init()
 
 	db = mini:GetSavedVars()
