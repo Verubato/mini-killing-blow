@@ -132,14 +132,17 @@ function M:Init()
 	soundPackDdl:SetPoint("TOPLEFT", packLbl, "BOTTOMLEFT", modernDdl and 0 or -16, -8)
 	soundPackDdl:SetWidth(columnWidth - horizontalSpacing)
 
-	channelLbl:SetPoint("TOPLEFT", soundPackDdl, "BOTTOMLEFT", 0, -verticalSpacing)
-	channelDdl:SetPoint("TOPLEFT", channelLbl, "BOTTOMLEFT", 0, -verticalSpacing)
+	channelLbl:SetPoint("TOP", packLbl, "TOP", 0, 0)
+	channelLbl:SetPoint("LEFT", panel, "LEFT", columnWidth, 0)
 
-	customCount.Label:SetPoint("TOP", packLbl, "TOP", 0, 0)
-	customCount.Label:SetPoint("LEFT", panel, "LEFT", columnWidth, 0)
+	channelDdl:SetPoint("TOP", soundPackDdl, "TOP", 0, 0)
+	channelDdl:SetPoint("LEFT", panel, "LEFT", columnWidth, 0)
+	channelDdl:SetWidth(columnWidth - horizontalSpacing)
 
-	customCount.EditBox:SetPoint("TOP", soundPackDdl, "TOP", 0, 0)
-	customCount.EditBox:SetPoint("LEFT", panel, "LEFT", columnWidth, 0)
+	-- The custom count box only applies to the Custom pack, so it lives under that column
+	-- rather than under Sound Channel, which now holds the second column instead.
+	customCount.Label:SetPoint("TOPLEFT", soundPackDdl, "BOTTOMLEFT", 0, -verticalSpacing)
+	customCount.EditBox:SetPoint("TOPLEFT", customCount.Label, "BOTTOMLEFT", 4, -4)
 
 	ShowHideCustomCount()
 
@@ -152,7 +155,7 @@ function M:Init()
 			addon:TestKb()
 		end,
 	})
-	testBtn:SetPoint("TOPLEFT", channelDdl, "BOTTOMLEFT", 0, -verticalSpacing)
+	testBtn:SetPoint("TOPLEFT", customCount.EditBox, "BOTTOMLEFT", 0, -verticalSpacing)
 
 	local textDivider = mini:Divider({
 		Parent = panel,
@@ -210,7 +213,7 @@ function M:Init()
 			"  - Create a set of sound effects in the 'ogg' file format and call them 1.ogg, 2.ogg, etc.",
 			"  - Place them in the MiniKillingBlowCustomSounds folder.",
 			"  - Then choose the 'Custom' sound effect pack.",
-			"  - Type the number of files you are using in the right text box (e.g. 1.ogg, 2.ogg, 3.ogg = 3 files).",
+			"  - Type the number of files you are using in the box below the sound pack dropdown (e.g. 1.ogg, 2.ogg, 3.ogg = 3 files).",
 			"  - Do a /reload.",
 			"  - Then click the test button to see if it works.",
 		},
