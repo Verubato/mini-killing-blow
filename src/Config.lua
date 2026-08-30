@@ -16,6 +16,11 @@ local M = {
 	},
 }
 
+-- Every field on this panel sits in from its own label by this much.
+local FIELD_INSET = 4
+-- The legacy dropdown template draws its field in from the frame's own left edge.
+local LEGACY_DROPDOWN_INSET = 16
+
 ---@class Db
 local dbDefaults = {
 	SoundEffectPack = M.SoundPacks.UnrealTournament,
@@ -50,7 +55,12 @@ function M:Init()
 	local verticalSpacing = mini.VerticalSpacing
 	local horizontalSpacing = mini.HorizontalSpacing
 
-	-- Forward declared so the reset button, built before this exists, can still call it.
+	-- Forward declared so the reset button, built before these exist, can still call it.
+	-- Forward declared so ShowHideCustomCount, defined before any of them exists, can see them.
+	local soundPackDdl
+	local textDivider
+	local dropdownShift
+	-- Forward declared so the reset button, built before it exists, can call it.
 	local ShowHideCustomCount
 
 	local header = mini:PanelHeader({
@@ -58,6 +68,11 @@ function M:Init()
 		Description = "Increase your PvP immersion.",
 		Gap = 6,
 		Divider = true,
+		Test = {
+			OnClick = function()
+				addon:TestKb()
+			end,
+		},
 		Reset = {
 			OnAccept = function()
 				mini:ResetSavedVars(dbDefaults)
@@ -91,16 +106,28 @@ function M:Init()
 	})
 
 	function ShowHideCustomCount()
-		if db.SoundEffectPack == M.SoundPacks.Custom then
-			customCount.EditBox:Show()
-			customCount.Label:Show()
+		local custom = db.SoundEffectPack == M.SoundPacks.Custom
+
+		customCount.EditBox:SetShown(custom)
+		customCount.Label:SetShown(custom)
+
+		textDivider:ClearAllPoints()
+
+		if custom then
+			-- The count box is inset from its label, so the rule backs that out to keep one
+			-- left edge down the column.
+			textDivider:SetPoint("TOPLEFT", customCount.EditBox, "BOTTOMLEFT", -FIELD_INSET, -verticalSpacing)
 		else
-			customCount.EditBox:Hide()
-			customCount.Label:Hide()
+			-- A hidden count box still reserves its row, so the rule takes that row back.
+			textDivider:SetPoint("TOPLEFT", soundPackDdl, "BOTTOMLEFT", -dropdownShift, -verticalSpacing)
 		end
+
+		textDivider:SetPoint("RIGHT", panel, "RIGHT", 0, 0)
 	end
 
-	local soundPackDdl, modernDdl = mini:Dropdown({
+	local modernDdl
+
+	soundPackDdl, modernDdl = mini:Dropdown({
 		Parent = panel,
 		Items = {
 			"Unreal Tournament",
@@ -141,7 +168,9 @@ function M:Init()
 
 	packLbl:SetPoint("TOPLEFT", header.Anchor, "BOTTOMLEFT", 0, -verticalSpacing)
 
-	soundPackDdl:SetPoint("TOPLEFT", packLbl, "BOTTOMLEFT", modernDdl and 0 or -16, -8)
+	dropdownShift = modernDdl and 0 or -LEGACY_DROPDOWN_INSET
+
+	soundPackDdl:SetPoint("TOPLEFT", packLbl, "BOTTOMLEFT", dropdownShift, -8)
 	soundPackDdl:SetWidth(columnWidth - horizontalSpacing)
 
 	channelLbl:SetPoint("TOP", packLbl, "TOP", 0, 0)
@@ -153,28 +182,15 @@ function M:Init()
 
 	-- The custom count box only applies to the Custom pack, so it lives under that column
 	-- rather than under Sound Channel, which now holds the second column instead.
-	customCount.Label:SetPoint("TOPLEFT", soundPackDdl, "BOTTOMLEFT", 0, -verticalSpacing)
-	customCount.EditBox:SetPoint("TOPLEFT", customCount.Label, "BOTTOMLEFT", 4, -4)
+	customCount.Label:SetPoint("TOPLEFT", soundPackDdl, "BOTTOMLEFT", -dropdownShift, -verticalSpacing)
+	customCount.EditBox:SetPoint("TOPLEFT", customCount.Label, "BOTTOMLEFT", FIELD_INSET, -4)
 
-	ShowHideCustomCount()
-
-	local testBtn = mini:Button({
-		Parent = panel,
-		Text = "Test",
-		Width = 120,
-		Height = 26,
-		OnClick = function()
-			addon:TestKb()
-		end,
-	})
-	testBtn:SetPoint("TOPLEFT", customCount.EditBox, "BOTTOMLEFT", 0, -8)
-
-	local textDivider = mini:Divider({
+	textDivider = mini:Divider({
 		Parent = panel,
 		Text = "Text",
 	})
-	textDivider:SetPoint("TOPLEFT", testBtn, "BOTTOMLEFT", 0, -verticalSpacing)
-	textDivider:SetPoint("RIGHT", panel, "RIGHT", 0, 0)
+
+	ShowHideCustomCount()
 
 	local lockedChk = mini:Checkbox({
 		Parent = panel,
@@ -215,7 +231,7 @@ function M:Init()
 		end,
 	})
 	killTextBox.Label:SetPoint("TOPLEFT", lockedChk, "BOTTOMLEFT", 0, -verticalSpacing)
-	killTextBox.EditBox:SetPoint("TOPLEFT", killTextBox.Label, "BOTTOMLEFT", 4, -4)
+	killTextBox.EditBox:SetPoint("TOPLEFT", killTextBox.Label, "BOTTOMLEFT", FIELD_INSET, -4)
 
 	local intro = mini:TextBlock({
 		Parent = panel,
@@ -230,5 +246,5 @@ function M:Init()
 			"  - Then click the test button to see if it works.",
 		},
 	})
-	intro:SetPoint("TOPLEFT", killTextBox.EditBox, "BOTTOMLEFT", 0, -verticalSpacing)
+	intro:SetPoint("TOPLEFT", killTextBox.EditBox, "BOTTOMLEFT", -FIELD_INSET, -verticalSpacing)
 end
