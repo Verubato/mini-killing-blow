@@ -53,6 +53,7 @@ function M:Init()
 		Parent = panel,
 		Description = "Increase your PvP immersion.",
 		Gap = 6,
+		Divider = true,
 	})
 
 	mini:RegisterSlashCommand(category, panel, {
