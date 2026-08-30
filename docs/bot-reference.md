@@ -71,18 +71,20 @@ capped at the configured count.
 ## Settings
 
 Single options panel. Panel description reads "Increase your PvP immersion."
+Its header carries a **Test** button, which plays the sound (and text, if
+enabled) as if a killing blow happened and advances the streak counter, beside
+a **Reset to Defaults** button, which resets every setting after a Yes/No
+confirmation and also moves the killing blow text back to its default screen
+position.
 
 | Setting | Type | Default | Range / options | Notes |
 | --- | --- | --- | --- | --- |
 | Sound Pack | dropdown | Unreal Tournament | Unreal Tournament, Halo, One Gun, Guns, Custom | Changing it resets the current streak. |
-| Custom sound effect count | numeric edit box | 5 | 1-50 | Only visible when Sound Pack is Custom. Number of N.ogg files in the custom folder. |
-| Sound Channel | dropdown | SFX | Master, Music, SFX, Ambience, Dialog | Which audio channel the sound plays on. |
-| Test | button | - | - | Plays the sound (and text, if enabled) as if a killing blow happened. Also advances the streak counter. |
+| Sound Channel | dropdown | SFX | Master, Music, SFX, Ambience, Dialog | Which audio channel the sound plays on. Sits beside Sound Pack. |
+| Custom sound effect count | numeric edit box | 5 | 1-50 | Only visible when Sound Pack is Custom. Number of N.ogg files in the custom folder, under the Sound Pack column. |
 | Locked | checkbox | on | - | Unchecked: the killing blow text stays visible and can be dragged to reposition it. |
-| Show killing blow text | checkbox | off | - | Enables the on-screen text. |
+| Enable Text | checkbox | off | - | Enables the on-screen killing blow text. |
 | Killing blow text | edit box | "KILLING BLOW!" | - | Empty text reverts to the default. |
-
-There is no reset-to-defaults button; settings live in MiniKillingBlowDB.
 
 ## Version-gated behavior
 
@@ -100,7 +102,7 @@ There is no reset-to-defaults button; settings live in MiniKillingBlowDB.
 | No sound in world PvP on Midnight | Known limitation: with secret combat log GUIDs the workaround only functions inside arena and battleground instances. |
 | Sound plays for NPC kills | Should not happen: victims must have a player GUID. On Midnight in arena/BG the fallback uses the "Total Killing Blows" statistic, which itself tracks killing blows. |
 | Custom sounds do not play | Folder must be exactly "MiniKillingBlowCustomSounds" inside AddOns, files named 1.ogg, 2.ogg, ... in ogg format, the count field must match, and a /reload is needed after adding files. Use the Test button to check. |
-| The killing blow text never shows | "Show killing blow text" is off by default; enable it in the options. |
+| The killing blow text never shows | "Enable Text" is off by default; enable it in the options. |
 | Text stuck permanently on screen | "Locked" is unchecked, which intentionally keeps the text visible for repositioning. Re-check Locked. |
-| Cannot move the text | Untick "Locked" (with "Show killing blow text" enabled) and drag it, then lock again. |
+| Cannot move the text | Untick "Locked" (with "Enable Text" enabled) and drag it, then lock again. |
 | Same sound repeats instead of escalating | Streaks require kills within 10 seconds of each other; the counter resets after 10 idle seconds. The Guns pack intentionally cycles 4 sounds, and One Gun has a single sound. |

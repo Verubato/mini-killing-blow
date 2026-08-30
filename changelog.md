@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.4.7
+
+- UI improvements.
+- Fixed reset not moving the text back.
+
 ## 2.4.6
 
 Stopped an internal helper leaking into the global namespace, where another addon could collide with it.
