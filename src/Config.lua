@@ -208,7 +208,8 @@ function M:Init()
 
 	local showTextChk = mini:Checkbox({
 		Parent = panel,
-		LabelText = "Show killing blow text",
+		LabelText = "Enable Text",
+		Tooltip = "Shows the text below when you get a killing blow.",
 		GetValue = function()
 			return db.ShowKillText
 		end,

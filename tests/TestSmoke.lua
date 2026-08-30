@@ -109,6 +109,45 @@ local function FindTextBlockUnder(text)
 	end
 end
 
+---A checkbox is drawn with its label as a child font string, so a test finds it the way a
+---player does.
+---@param text string
+---@return table?
+local function FindCheckbox(text)
+	for _, frame in ipairs(WowMock.Frames) do
+		if frame.Text and frame.Text.GetText and frame.Text:GetText() == text then
+			return frame
+		end
+	end
+end
+
+---The client draws nothing in the mock, so a test stands in for the tooltip and reads back
+---what the hover asked it to show.
+---@param frame table
+---@return string? title, string? body
+local function TooltipOn(frame)
+	local title, body
+	local realSetText, realAddLine = GameTooltip.SetText, GameTooltip.AddLine
+
+	GameTooltip.SetText = function(_, text)
+		title = text
+	end
+
+	GameTooltip.AddLine = function(_, text)
+		body = text
+	end
+
+	local ok, err = pcall(frame:GetScript("OnEnter"), frame)
+
+	GameTooltip.SetText, GameTooltip.AddLine = realSetText, realAddLine
+
+	if not ok then
+		error(err, 0)
+	end
+
+	return title, body
+end
+
 smoke.Run("MiniKillingBlow", {
 	extra = function(context)
 		fw.eq(context.Addon.Framework.CustomStyling, true, "custom styling on")
@@ -152,6 +191,13 @@ smoke.Run("MiniKillingBlow", {
 		local intro = FindTextBlockUnder("To make your own sound effects:")
 		fw.not_nil(intro, "the custom sound help text")
 		fw.eq(select(4, intro:GetPoint()), -FIELD_INSET, "the help text starts on the panel's left edge")
+
+		local enableText = FindCheckbox("Enable Text")
+		fw.not_nil(enableText, "the enable text checkbox")
+
+		local title, body = TooltipOn(enableText)
+		fw.eq(title, "Enable Text", "the tooltip is titled with the label")
+		fw.eq(body, "Shows the text below when you get a killing blow.", "the tooltip says what the toggle does")
 
 		local db = _G["MiniKillingBlowDB"]
 		db.SoundEffectPack = "Custom"
