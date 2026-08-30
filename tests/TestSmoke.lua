@@ -121,6 +121,17 @@ local function FindCheckbox(text)
 	end
 end
 
+---The display frame is never given a global name, so a test finds it by the animation
+---group that only it owns.
+---@return table?
+local function FindKillBlowFrame()
+	for _, frame in ipairs(WowMock.Frames) do
+		if frame.AnimGroup then
+			return frame
+		end
+	end
+end
+
 ---The client draws nothing in the mock, so a test stands in for the tooltip and reads back
 ---what the hover asked it to show.
 ---@param frame table
@@ -203,11 +214,28 @@ smoke.Run("MiniKillingBlow", {
 		db.SoundEffectPack = "Custom"
 		db.ShowKillText = true
 
+		-- The reload step rebuilt the addon on a fresh closure, so the display has to come from
+		-- the live instance's own Test button.
+		testBtn:Click()
+
+		local killBlowFrame = FindKillBlowFrame()
+		fw.not_nil(killBlowFrame, "the killing blow display frame")
+
+		killBlowFrame:ClearAllPoints()
+		killBlowFrame:SetPoint("CENTER", UIParent, "CENTER", 350, -75)
+		db.KillTextX = 350
+		db.KillTextY = -75
+
 		AcceptConfirm(function()
 			resetBtn:Click()
 		end)
 
+		local defaults = context.Addon.Config.DbDefaults
+		local _, _, _, killTextX, killTextY = killBlowFrame:GetPoint(1)
+
 		fw.eq(db.SoundEffectPack, context.Addon.Config.SoundPacks.UnrealTournament, "reset restored SoundEffectPack")
 		fw.eq(db.ShowKillText, false, "reset restored ShowKillText")
+		fw.eq(killTextX, defaults.KillTextX, "reset put the display back at its default x")
+		fw.eq(killTextY, defaults.KillTextY, "reset put the display back at its default y")
 	end,
 })

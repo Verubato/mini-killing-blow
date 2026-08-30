@@ -33,6 +33,8 @@ local dbDefaults = {
 	KillTextLocked = true,
 }
 
+M.DbDefaults = dbDefaults
+
 addon.Config = M
 
 function M:Init()

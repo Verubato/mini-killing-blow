@@ -308,6 +308,10 @@ function addon:UpdateKillText()
 	local label = db.KillText or "KILLING BLOW!"
 	killBlowFrame.Text:SetText(label)
 	killBlowFrame.Shadow:SetText(label)
+
+	-- The reset restores the default position, and nothing else re-anchors the frame.
+	killBlowFrame:ClearAllPoints()
+	killBlowFrame:SetPoint("CENTER", UIParent, "CENTER", db.KillTextX or 0, db.KillTextY or 100)
 end
 
 function addon:UpdateKillTextLocked()
