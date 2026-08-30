@@ -31,6 +31,9 @@ local dbDefaults = {
 addon.Config = M
 
 function M:Init()
+	-- A styled button clashes with the stock Blizzard art around it in the settings screen.
+	mini:SetCustomStyling(true, { Button = false })
+
 	db = mini:GetSavedVars(dbDefaults)
 
 	local panel = CreateFrame("Frame")
@@ -139,13 +142,23 @@ function M:Init()
 
 	ShowHideCustomCount()
 
-	local testBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
-	testBtn:SetSize(120, 26)
+	local testBtn = mini:Button({
+		Parent = panel,
+		Text = "Test",
+		Width = 120,
+		Height = 26,
+		OnClick = function()
+			addon:TestKb()
+		end,
+	})
 	testBtn:SetPoint("TOPLEFT", channelDdl, "BOTTOMLEFT", 0, -verticalSpacing)
-	testBtn:SetText("Test")
-	testBtn:SetScript("OnClick", function()
-		addon:TestKb()
-	end)
+
+	local textDivider = mini:Divider({
+		Parent = panel,
+		Text = "Text",
+	})
+	textDivider:SetPoint("TOPLEFT", testBtn, "BOTTOMLEFT", 0, -verticalSpacing * 2)
+	textDivider:SetPoint("RIGHT", panel, "RIGHT", 0, 0)
 
 	local lockedChk = mini:Checkbox({
 		Parent = panel,
@@ -159,7 +172,7 @@ function M:Init()
 			addon:UpdateKillTextLocked()
 		end,
 	})
-	lockedChk:SetPoint("TOPLEFT", testBtn, "BOTTOMLEFT", 0, -verticalSpacing)
+	lockedChk:SetPoint("TOPLEFT", textDivider, "BOTTOMLEFT", 0, -verticalSpacing)
 
 	local showTextChk = mini:Checkbox({
 		Parent = panel,
