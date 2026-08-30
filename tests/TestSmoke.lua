@@ -19,10 +19,38 @@ local function HasDivider(text)
 	return false
 end
 
+---The confirmation dialog is a frame the framework owns, so a test reaches it by its button label.
+---@param label string
+---@return table?
+local function FindButton(label)
+	for _, frame in ipairs(WowMock.Frames) do
+		if frame.GetText and frame:GetText() == label and frame.Click then
+			return frame
+		end
+	end
+
+	return nil
+end
+
 smoke.Run("MiniKillingBlow", {
 	extra = function(context)
 		fw.eq(context.Addon.Framework.CustomStyling, true, "custom styling on")
 		fw.eq(context.Addon.Framework.CustomStylingOverrides.Button, false, "stock buttons")
 		fw.truthy(HasDivider("SETTINGS"), "the settings section rule under the header")
+
+		local db = _G["MiniKillingBlowDB"]
+		db.SoundEffectPack = "Custom"
+		db.ShowKillText = true
+
+		local resetBtn = FindButton("Reset to Defaults")
+		fw.not_nil(resetBtn, "reset button exists")
+		resetBtn:Click()
+
+		local confirmAccept = FindButton("Reset")
+		fw.not_nil(confirmAccept, "the confirmation dialog opened")
+		confirmAccept:Click()
+
+		fw.eq(db.SoundEffectPack, context.Addon.Config.SoundPacks.UnrealTournament, "reset restored SoundEffectPack")
+		fw.eq(db.ShowKillText, false, "reset restored ShowKillText")
 	end,
 })

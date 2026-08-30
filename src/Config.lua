@@ -49,11 +49,23 @@ function M:Init()
 	local columnWidth = mini:ColumnWidth(columns, 0, 0)
 	local verticalSpacing = mini.VerticalSpacing
 	local horizontalSpacing = mini.HorizontalSpacing
+
+	-- Forward declared so the reset button, built before this exists, can still call it.
+	local ShowHideCustomCount
+
 	local header = mini:PanelHeader({
 		Parent = panel,
 		Description = "Increase your PvP immersion.",
 		Gap = 6,
 		Divider = true,
+		Reset = {
+			OnAccept = function()
+				mini:ResetSavedVars(dbDefaults)
+				ShowHideCustomCount()
+				addon:UpdateKillText()
+				addon:UpdateKillTextLocked()
+			end,
+		},
 	})
 
 	mini:RegisterSlashCommand(category, panel, {
@@ -62,7 +74,7 @@ function M:Init()
 		"/mkb",
 	})
 
-	local packLbl = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	local packLbl = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 	packLbl:SetText("Sound Pack")
 
 	local customCount = mini:EditBox({
@@ -78,7 +90,7 @@ function M:Init()
 		Width = columnWidth - horizontalSpacing,
 	})
 
-	local function ShowHideCustomCount()
+	function ShowHideCustomCount()
 		if db.SoundEffectPack == M.SoundPacks.Custom then
 			customCount.EditBox:Show()
 			customCount.Label:Show()
@@ -107,7 +119,7 @@ function M:Init()
 		end,
 	})
 
-	local channelLbl = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	local channelLbl = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 	channelLbl:SetText("Sound Channel")
 
 	local channelDdl = mini:Dropdown({
