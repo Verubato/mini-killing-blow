@@ -167,13 +167,13 @@ function M:Init()
 			addon:TestKb()
 		end,
 	})
-	testBtn:SetPoint("TOPLEFT", customCount.EditBox, "BOTTOMLEFT", 0, -verticalSpacing)
+	testBtn:SetPoint("TOPLEFT", customCount.EditBox, "BOTTOMLEFT", 0, -8)
 
 	local textDivider = mini:Divider({
 		Parent = panel,
 		Text = "Text",
 	})
-	textDivider:SetPoint("TOPLEFT", testBtn, "BOTTOMLEFT", 0, -verticalSpacing * 2)
+	textDivider:SetPoint("TOPLEFT", testBtn, "BOTTOMLEFT", 0, -verticalSpacing)
 	textDivider:SetPoint("RIGHT", panel, "RIGHT", 0, 0)
 
 	local lockedChk = mini:Checkbox({
