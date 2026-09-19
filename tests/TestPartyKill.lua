@@ -30,17 +30,14 @@ local function WithGlobals(overrides, fn)
 	end
 end
 
----Logs in with LE_EXPANSION_LEVEL_CURRENT raised to WowMock's own LE_EXPANSION_MIDNIGHT (11),
----so HasSecrets() reports true and the addon registers PARTY_KILL instead of the combat log
----route, letting a test drive PartyKill() by firing PARTY_KILL directly.
+---The mock is a mainline client that carries issecretvalue, so HasSecrets() answers true
+---and the addon registers PARTY_KILL instead of the combat log route.
 ---@param preLoginOverrides table<string, any>?
 ---@return table context
 local function LoginOnASecretsClient(preLoginOverrides)
 	local context = harness.Load("MiniKillingBlow")
-	local overrides = preLoginOverrides or {}
-	overrides.LE_EXPANSION_LEVEL_CURRENT = 11
 
-	WithGlobals(overrides, function()
+	WithGlobals(preLoginOverrides or {}, function()
 		harness.Login(context)
 	end)
 
@@ -50,7 +47,15 @@ end
 fw.describe("MiniKillingBlow - event routing", function()
 	fw.it("registers COMBAT_LOG_EVENT_UNFILTERED, not PARTY_KILL, on a client without secrets", function()
 		local context = harness.Load("MiniKillingBlow")
-		harness.Login(context)
+		local real = issecretvalue
+		issecretvalue = nil
+
+		local ok, err = pcall(harness.Login, context)
+		issecretvalue = real
+
+		if not ok then
+			error(err, 0)
+		end
 
 		fw.eq(WowMock.FireEvent("PARTY_KILL", "x", "y"), 0, "PARTY_KILL was never registered")
 		fw.truthy(WowMock.FireEvent("COMBAT_LOG_EVENT_UNFILTERED") > 0, "COMBAT_LOG_EVENT_UNFILTERED is the route this client uses")
