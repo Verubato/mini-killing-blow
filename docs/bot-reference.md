@@ -13,7 +13,7 @@ escalate through different sounds as the streak grows. Optionally shows a large 
 | --- | --- |
 | Version | 2.4.6 |
 | Author | Verz |
-| Interface versions (TOC) | 120100, 50504, 40402, 38002, 38000, 30405, 30300, 20506, 11509 |
+| Interface versions (TOC) | 120100, 16001, 50504, 40402, 38002, 38000, 30405, 30300, 20506, 11509 |
 | Saved variables | MiniKillingBlowDB |
 | Slash commands | /minikillingblow, /minikb, /mkb (all open the settings panel) |
 | Options location | Game options -> AddOns -> MiniKillingBlow |
