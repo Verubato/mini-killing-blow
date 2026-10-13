@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.9
+
+Fixed killing blows not being detected on WoW Forever.
+
 ## 2.4.8
 
 Added WoW Forever support.
