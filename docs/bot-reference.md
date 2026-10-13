@@ -28,7 +28,7 @@ escalate through different sounds as the streak grows. Optionally shows a large 
   you and the victim is a player character (GUID starts with "Player-"). Kills by
   your pet have a different killer GUID and do not trigger the sound.
 - On pre-Midnight clients this comes from COMBAT_LOG_EVENT_UNFILTERED. On Midnight
-  (12.x) clients the direct PARTY_KILL event is used instead.
+  retail and WoW Forever the direct PARTY_KILL event is used instead.
 - Midnight arena/battleground workaround: when the client hides combat log GUIDs
   behind secret values, the addon cannot read who killed whom. Inside arena or
   battleground instances it falls back to checking whether your "Total Killing
@@ -89,8 +89,9 @@ position.
 ## Version-gated behavior
 
 - Pre-Midnight clients: kill detection via the combat log.
-- Midnight (12.x) clients: direct PARTY_KILL event; when GUIDs are secret, the
-  achievement-statistic fallback works only inside arenas and battlegrounds.
+- Midnight retail and WoW Forever (WOW_PROJECT_CAMELOT): direct
+  PARTY_KILL event; when GUIDs are secret, the achievement-statistic fallback works
+  only inside arenas and battlegrounds.
 - On Midnight clients the settings panel cannot be opened during combat; the slash
   command prints "Can't do that during combat." instead.
 

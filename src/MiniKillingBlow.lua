@@ -193,10 +193,9 @@ local function GetSoundEffect(killingBlows)
 	return nil
 end
 
--- The clients that fire PARTY_KILL are exactly the ones that hide combat log GUIDs behind
--- secret values, so the two questions have the same answer.
+-- Forever fires PARTY_KILL but is not mainline, so the secrets gate alone misses it.
 local function HasPartyKillEvent()
-	return mini:HasSecrets()
+	return mini:HasSecrets() or (WOW_PROJECT_CAMELOT ~= nil and WOW_PROJECT_ID == WOW_PROJECT_CAMELOT)
 end
 
 local function IsPlayerGUID(guid)

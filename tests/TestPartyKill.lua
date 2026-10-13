@@ -30,11 +30,11 @@ local function WithGlobals(overrides, fn)
 	end
 end
 
----The mock is a mainline client that carries issecretvalue, so HasSecrets() answers true
----and the addon registers PARTY_KILL instead of the combat log route.
+---Logs in on a client that registers PARTY_KILL. Without overrides the mock is a mainline
+---client that carries issecretvalue, so HasSecrets() answers true.
 ---@param preLoginOverrides table<string, any>?
 ---@return table context
-local function LoginOnASecretsClient(preLoginOverrides)
+local function LoginOnAPartyKillClient(preLoginOverrides)
 	local context = harness.Load("MiniKillingBlow")
 
 	WithGlobals(preLoginOverrides or {}, function()
@@ -62,7 +62,15 @@ fw.describe("MiniKillingBlow - event routing", function()
 	end)
 
 	fw.it("registers PARTY_KILL, not COMBAT_LOG_EVENT_UNFILTERED, on a client with secrets", function()
-		LoginOnASecretsClient()
+		LoginOnAPartyKillClient()
+
+		fw.truthy(WowMock.FireEvent("PARTY_KILL", "x", "y") > 0, "PARTY_KILL is the route this client uses")
+		fw.eq(WowMock.FireEvent("COMBAT_LOG_EVENT_UNFILTERED"), 0, "COMBAT_LOG_EVENT_UNFILTERED was never registered")
+	end)
+
+	fw.it("registers PARTY_KILL, not COMBAT_LOG_EVENT_UNFILTERED, on Forever", function()
+		fw.truthy(WOW_PROJECT_CAMELOT, "the Forever project constant is set")
+		LoginOnAPartyKillClient({ WOW_PROJECT_ID = WOW_PROJECT_CAMELOT })
 
 		fw.truthy(WowMock.FireEvent("PARTY_KILL", "x", "y") > 0, "PARTY_KILL is the route this client uses")
 		fw.eq(WowMock.FireEvent("COMBAT_LOG_EVENT_UNFILTERED"), 0, "COMBAT_LOG_EVENT_UNFILTERED was never registered")
@@ -75,7 +83,7 @@ fw.describe("MiniKillingBlow - PartyKill with readable GUIDs", function()
 	local playerGUID
 
 	fw.before_each(function()
-		context = LoginOnASecretsClient()
+		context = LoginOnAPartyKillClient()
 		db = _G["MiniKillingBlowDB"]
 		db.SoundEffectPack = context.Addon.Config.SoundPacks.UnrealTournament
 		playerGUID = UnitGUID("player")
@@ -118,7 +126,7 @@ fw.describe("MiniKillingBlow - PartyKill with secret GUIDs", function()
 		killCount = 0
 		sentinel = {}
 
-		context = LoginOnASecretsClient({
+		context = LoginOnAPartyKillClient({
 			GetAchievementCriteriaInfoByID = function()
 				return nil, nil, nil, nil, nil, nil, nil, nil, killCount
 			end,

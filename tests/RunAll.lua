@@ -7,6 +7,9 @@
 
 package.path = "build/Lua/?.lua;tests/?.lua;" .. package.path
 
+-- The shared mock does not define the Forever project constant.
+_G.WOW_PROJECT_CAMELOT = 18
+
 io.write("MiniKillingBlow - unit tests\n")
 io.write("======================================\n")
 
